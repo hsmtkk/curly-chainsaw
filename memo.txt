@@ -1,3 +1,4 @@
+You must set Google DNS servers at FreeNom side.
 ns-cloud-e1.googledomains.com
 ns-cloud-e2.googledomains.com
 ns-cloud-e3.googledomains.com
