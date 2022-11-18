@@ -1,7 +1,7 @@
 // Copyright (c) HashiCorp, Inc
 // SPDX-License-Identifier: MPL-2.0
 import { Construct } from "constructs";
-import { App, TerraformStack, CloudBackend, NamedCloudWorkspace, TerraformOutput } from "cdktf";
+import { App, TerraformStack, CloudBackend, NamedCloudWorkspace } from "cdktf";
 import * as google from '@cdktf/provider-google';
 
 const project = 'curly-chainsaw-369000';
@@ -15,6 +15,10 @@ class MyStack extends TerraformStack {
     new google.provider.GoogleProvider(this, 'google', {
       project,
       region,
+    });
+
+    const static_address = new google.computeGlobalAddress.ComputeGlobalAddress(this, 'static_address', {
+      name: 'staticaddress',
     });
 
     new google.cloudbuildTrigger.CloudbuildTrigger(this, 'cloud_build_trigger', {
@@ -38,9 +42,16 @@ class MyStack extends TerraformStack {
 
     new google.dnsRecordSet.DnsRecordSet(this, 'example_record', {
       managedZone: dns_managed_zone.name,
-      name: `example.${dns_managed_zone.dnsName}.`,
+      name: `example.${dns_managed_zone.dnsName}`,
       type: 'A',
       rrdatas: ['8.8.8.8'],
+    });
+
+    new google.dnsRecordSet.DnsRecordSet(this, 'whoami_record', {
+      managedZone: dns_managed_zone.name,
+      name: `whoami.${dns_managed_zone.dnsName}`,
+      type: 'A',
+      rrdatas: [static_address.address],
     });
 
     new google.containerCluster.ContainerCluster(this, 'container_cluster', {
@@ -50,14 +61,6 @@ class MyStack extends TerraformStack {
       // To avoid this error
       // googleapi: Error 400: Max pods constraint on node pools for Autopilot clusters should be 32., badRequest 
       ipAllocationPolicy: {},
-    });
-
-    const static_address = new google.computeGlobalAddress.ComputeGlobalAddress(this, 'static_address', {
-      name: 'static_address',
-    });
-
-    new TerraformOutput(this, 'static_address_output', {
-      value: static_address.address,
     });
   }
 }

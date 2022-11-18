@@ -18,5 +18,13 @@ spec:
       containers:
         - name: whoami
           image: traefik/whoami:latest
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
           ports:
             - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
