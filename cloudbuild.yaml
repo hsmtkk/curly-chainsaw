@@ -3,5 +3,4 @@ steps:
   - name: sdesbure/yamllint
     entrypoint: yamllint
     args:
-      - cloudbuild.yaml
       - k8s/*.yaml
